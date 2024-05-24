@@ -3,6 +3,7 @@ package beaverbackend.service.auth;
 import beaverbackend.enums.JwtTokenTypeEnum;
 import beaverbackend.jpa.model.RefreshToken;
 import beaverbackend.jpa.repository.RefreshTokenRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+
 @Service
 @RequiredArgsConstructor
 public class LogoutHandlerService implements LogoutHandler {
@@ -23,14 +26,14 @@ public class LogoutHandlerService implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (!authHeader.startsWith(JwtTokenTypeEnum.BEARER.getHeader())) {
+        logger.warn("Begining logout process for user with no authentication");
+
+        final String refreshToken = Arrays.stream(request.getCookies()).filter(cookie -> "refresh_token".equals(cookie.getName())).findFirst().map(Cookie::getValue).orElse(null);
+
+        if (refreshToken == null) {
             return;
         }
-        final String refreshToken = authHeader.substring(7);
-
-        Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
 
         RefreshToken storedRefreshToken = refreshTokenRepository.findByToken(refreshToken)
                 .map(token -> {

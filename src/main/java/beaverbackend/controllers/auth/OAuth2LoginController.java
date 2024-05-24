@@ -1,6 +1,5 @@
 package beaverbackend.controllers.auth;
 
-import beaverbackend.controllers.common.BadRequestException;
 import beaverbackend.service.auth.AuthService;
 import beaverbackend.service.auth.OAuth2LoginService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,12 +22,8 @@ public class OAuth2LoginController {
 
     @PostMapping("/login/oauth2/github")
     public ResponseEntity<?> githubLoginCallback(@RequestParam String code, HttpServletResponse response) {
-        try {
-            Authentication authentication = oAuth2LoginService.processGithubOauth2Login(code);
-            return ResponseEntity.ok(authService.getJwtTokensAfterAuthentication(authentication, response));
-        } catch (BadRequestException e) {
-            return ResponseEntity.internalServerError().body(e.getResponse());
-        }
+        Authentication authentication = oAuth2LoginService.processGithubOauth2Login(code);
+        return ResponseEntity.ok(authService.getJwtTokensAfterAuthentication(authentication, response));
     }
 
 }

@@ -31,8 +31,13 @@ public class AssistantController {
 
     @PreAuthorize("hasAuthority('SCOPE_LAB_ASSISTANT')")
     @GetMapping("/search-examination")
-    public ResponseEntity<List<LabExamination>> searchLabExamination(@RequestBody LabExaminationSearchReq req) {
+    public ResponseEntity<List<LabExamination>> searchLabExamination(
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "examinationCode", required = false) String examinationCode,
+            @RequestParam(value = "labAssistantId", required = false) String labAssistantId,
+            @RequestParam(value = "rightsLevel", required = false) String rightsLevel
+    ) {
+        LabExaminationSearchReq req = new LabExaminationSearchReq(status, examinationCode, labAssistantId, rightsLevel);
         return ResponseEntity.ok(labExaminationService.assistantSearchLabExamination(req));
     }
-
 }

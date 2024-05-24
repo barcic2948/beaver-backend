@@ -73,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
         refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60); //in seconds
+        refreshTokenCookie.setPath("/");
         response.addCookie(refreshTokenCookie);
         return refreshTokenCookie;
     }
